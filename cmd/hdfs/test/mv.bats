@@ -90,7 +90,7 @@ OUT
   run $HDFS mv -T /_test_cmd/mv/a /_test_cmd/mv/dir1
   assert_failure
   assert_output <<OUT
-Can't replace directory with non-directory.
+can't replace directory with non-directory
 OUT
 }
 
@@ -98,7 +98,7 @@ OUT
   run $HDFS mv -nT /_test_cmd/mv/a /_test_cmd/mv/dir1
   assert_failure
   assert_output <<OUT
-Can't replace directory with non-directory.
+can't replace directory with non-directory
 OUT
 }
 
