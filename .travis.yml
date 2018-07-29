@@ -1,0 +1,18 @@
+sudo: required
+language: go
+go_import_path: github.com/barakmich/go-hdfs
+go: 1.x
+env:
+- PLATFORM=cdh5
+- PLATFORM=hdp2
+install:
+- git clone https://github.com/sstephenson/bats $HOME/bats
+- mkdir -p $HOME/bats/build
+- "$HOME/bats/install.sh $HOME/bats/build"
+- export PATH="$PATH:$HOME/bats/build/bin"
+- ./travis-setup.sh $PLATFORM
+before_script:
+- export HADOOP_CONF_DIR="/etc/hadoop/conf"
+script: make test
+cache:
+- "$HOME/bats"
