@@ -62,6 +62,8 @@ func printSection(args []string, fromEnd bool) error {
 		return err
 	}
 
+	merr := &multierr{}
+
 	for _, p := range expanded {
 		file, err := client.Open(p)
 		if err != nil || file.Stat().IsDir() {
@@ -72,7 +74,8 @@ func printSection(args []string, fromEnd bool) error {
 					Err:  errors.New("file is a directory"),
 				}
 			}
-			return err
+			merr.AddErr(err)
+			continue
 		}
 
 		if len(expanded) > 1 {
@@ -98,7 +101,7 @@ func printSection(args []string, fromEnd bool) error {
 			return err
 		}
 	}
-	return nil
+	return merr.IsError()
 }
 
 func headLines(file *hdfs.FileReader, numLines int64) error {

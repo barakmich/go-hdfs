@@ -30,7 +30,7 @@ func rmRun(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-
+	merr := &multierr{}
 	for _, p := range expanded {
 		info, err := client.Stat(p)
 		if err != nil {
@@ -41,16 +41,18 @@ func rmRun(cmd *cobra.Command, args []string) error {
 			if pathErr, ok := err.(*os.PathError); ok {
 				pathErr.Op = "remove"
 			}
-
-			return err
+			merr.AddErr(err)
+			continue
 		}
 
 		if !rmRecursiveOpt && info.IsDir() {
-			return &os.PathError{
+			err := &os.PathError{
 				Op:   "remove",
 				Path: p,
 				Err:  errors.New("file is a directory"),
 			}
+			merr.AddErr(err)
+			continue
 		}
 
 		err = client.Remove(p)
@@ -58,5 +60,5 @@ func rmRun(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-	return nil
+	return merr.IsError()
 }

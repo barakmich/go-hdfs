@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -8,10 +9,11 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:          "gohdfs",
-	Short:        "GoHDFS is a very fast client for HDFS clusters",
-	RunE:         rootRun,
-	SilenceUsage: true,
+	Use:           "gohdfs",
+	Short:         "GoHDFS is a very fast client for HDFS clusters",
+	RunE:          rootRun,
+	SilenceUsage:  true,
+	SilenceErrors: true,
 }
 
 func rootRun(cmd *cobra.Command, args []string) error {
@@ -24,6 +26,7 @@ func Execute(version string) {
 	}
 	rootCmd.Version = version
 	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 }

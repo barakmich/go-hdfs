@@ -35,7 +35,7 @@ func duRun(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		return cmd.Help()
 	}
-
+	merr := &multierr{}
 	expanded, client, err := getClientAndExpandedPaths(args)
 	if err != nil {
 		return err
@@ -47,7 +47,8 @@ func duRun(cmd *cobra.Command, args []string) error {
 	for _, p := range expanded {
 		info, err := client.Stat(p)
 		if err != nil {
-			return err
+			merr.AddErr(err)
+			continue
 		}
 
 		var size int64
@@ -55,14 +56,15 @@ func duRun(cmd *cobra.Command, args []string) error {
 			if duSummarizeOpt {
 				cs, err := client.GetContentSummary(p)
 				if err != nil {
-					return err
+					merr.AddErr(err)
+					continue
 				}
 
 				size = cs.Size()
 			} else {
 				size, err = duDir(client, tw, p, duHumanReadableOpt)
 				if err != nil {
-					return err
+					merr.AddErr(err)
 				}
 			}
 		} else {
@@ -71,7 +73,7 @@ func duRun(cmd *cobra.Command, args []string) error {
 
 		printSize(tw, size, p, duHumanReadableOpt)
 	}
-	return nil
+	return merr.IsError()
 }
 
 func duDir(client *hdfs.Client, tw *tabwriter.Writer, dir string, humanReadable bool) (int64, error) {
