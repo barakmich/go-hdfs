@@ -49,17 +49,26 @@ Flags:
 Use "gohdfs [command] --help" for more information about a command.
 ```
 
-Subcommands:
+Subcommands and help:
 ```
-$ hdfs mv
+$ hdfs mv --help
+move HDFS files
+
+Usage:
+  gohdfs mv [-fT] SOURCE... DEST
+
+Flags:
+  -h, --help                  help for mv
+  -n, --no-clobber            do not overwrite an existing file
+  -T, --no-target-directory   treat DEST as a normal file
 ```
 
 
 Compared to upstream:
 
 ```
-$ hdfs mv
-Both a source and destination are required. 
+$ hdfs mv --help
+unknown option: -
 Usage: ./hdfs COMMAND
 The flags available are a subset of the POSIX ones, but should behave similarly.
 
