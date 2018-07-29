@@ -57,15 +57,15 @@ func mvRun(cmd *cobra.Command, args []string) error {
 
 	exists := !os.IsNotExist(err)
 	if exists && !mvDestAsFile && destInfo.IsDir() {
-		moveInto(client, sources, dest, mvNoClobberOpt)
+		err = moveInto(client, sources, dest, mvNoClobberOpt)
 	} else {
 		if len(sources) > 1 {
 			return errors.New("can't move multiple sources into the same place")
 		}
 
-		moveTo(client, sources[0], dest, mvNoClobberOpt)
+		err = moveTo(client, sources[0], dest, mvNoClobberOpt)
 	}
-	return nil
+	return err
 }
 
 func moveInto(client *hdfs.Client, sources []string, dest string, force bool) error {
