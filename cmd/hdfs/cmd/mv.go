@@ -16,7 +16,7 @@ func init() {
 }
 
 var mvCmd = &cobra.Command{
-	Use:   "mv [-fT] SOURCE... DEST",
+	Use:   "mv [-nT] SOURCE... DEST",
 	Short: "move HDFS files",
 	RunE:  mvRun,
 	DisableFlagsInUseLine: true,
@@ -57,13 +57,13 @@ func mvRun(cmd *cobra.Command, args []string) error {
 
 	exists := !os.IsNotExist(err)
 	if exists && !mvDestAsFile && destInfo.IsDir() {
-		err = moveInto(client, sources, dest, mvNoClobberOpt)
+		err = moveInto(client, sources, dest, !mvNoClobberOpt)
 	} else {
 		if len(sources) > 1 {
 			return errors.New("can't move multiple sources into the same place")
 		}
 
-		err = moveTo(client, sources[0], dest, mvNoClobberOpt)
+		err = moveTo(client, sources[0], dest, !mvNoClobberOpt)
 	}
 	return err
 }
