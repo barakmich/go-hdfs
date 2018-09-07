@@ -43,7 +43,7 @@ func lsRun(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(paths) == 0 {
-		paths = []string{userDir()}
+		paths = []string{userDir(client)}
 	}
 
 	files := make([]string, 0, len(paths))
