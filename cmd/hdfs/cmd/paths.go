@@ -13,21 +13,12 @@ import (
 
 var (
 	errMultipleNamenodeUrls = errors.New("Multiple namenode URLs specified")
-	rootPath                = userDir()
 )
 
-func userDir() string {
-	currentUser, err := hdfs.Username()
-	if err != nil || currentUser == "" {
-		return "/"
-	}
-
-	return path.Join("/user", currentUser)
+func userDir(client *hdfs.Client) string {
+	return path.Join("/user", client.User())
 }
 
-// normalizePaths parses the hosts out of HDFS URLs, and turns relative paths
-// into absolute ones (by appending /user/<user>). If multiple HDFS urls with
-// differing hosts are passed in, it returns an error.
 func normalizePaths(paths []string) ([]string, string, error) {
 	namenode := ""
 	cleanPaths := make([]string, 0, len(paths))
@@ -46,12 +37,7 @@ func normalizePaths(paths []string) ([]string, string, error) {
 			namenode = url.Host
 		}
 
-		p := path.Clean(url.Path)
-		if !path.IsAbs(url.Path) {
-			p = path.Join(rootPath, p)
-		}
-
-		cleanPaths = append(cleanPaths, p)
+		cleanPaths = append(cleanPaths, path.Clean(url.Path))
 	}
 
 	return cleanPaths, namenode, nil
